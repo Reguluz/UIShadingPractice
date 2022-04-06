@@ -1,12 +1,12 @@
 // Made with Amplify Shader Editor
 // Available at the Unity Asset Store - http://u3d.as/y3X 
-Shader "14/IsolineAtlas1"
+Shader "14/IsolineAtlas2"
 {
 	Properties
 	{
 		_speed("speed", Float) = 0
-		_Freq("Freq", Float) = 5
-		_width("width", Range( 0 , 1)) = 0.08
+		_CountourScale("CountourScale", Float) = 1.4
+		_CountourWidth("CountourWidth", Float) = 2.29
 		[HDR]_Color0("Color 0", Color) = (1,1,1,1)
 
 	}
@@ -71,8 +71,8 @@ Shader "14/IsolineAtlas1"
 
 			uniform float4 _Color0;
 			uniform float _speed;
-			uniform float _Freq;
-			uniform float _width;
+			uniform float _CountourScale;
+			uniform float _CountourWidth;
 			float3 mod2D289( float3 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
 			float2 mod2D289( float2 x ) { return x - floor( x * ( 1.0 / 289.0 ) ) * 289.0; }
 			float3 permute( float3 x ) { return mod2D289( ( ( x * 34.0 ) + 1.0 ) * x ); }
@@ -145,9 +145,12 @@ Shader "14/IsolineAtlas1"
 				float2 texCoord3 = i.ase_texcoord1.xy * float2( 1,1 ) + temp_cast_0;
 				float simplePerlin2D1 = snoise( texCoord3*2.87 );
 				simplePerlin2D1 = simplePerlin2D1*0.5 + 0.5;
+				float temp_output_21_0_g6 = ( simplePerlin2D1 * _CountourScale );
+				float temp_output_29_0_g6 = fwidth( temp_output_21_0_g6 );
+				float smoothstepResult30_g6 = smoothstep( ( temp_output_29_0_g6 * ( _CountourWidth * -1.0 ) ) , ( temp_output_29_0_g6 * ( _CountourWidth * 1.0 ) ) , abs( ( frac( temp_output_21_0_g6 ) - 0.5 ) ));
 				
 				
-				finalColor = ( _Color0 * step( fmod( ( simplePerlin2D1 * _Freq ) , 1.0 ) , _width ) );
+				finalColor = ( _Color0 * smoothstepResult30_g6 );
 				return finalColor;
 			}
 			ENDCG
@@ -159,25 +162,21 @@ Shader "14/IsolineAtlas1"
 }
 /*ASEBEGIN
 Version=18935
-9;324;2498;871;3861.919;1131.725;2.536339;True;True
-Node;AmplifyShaderEditor.RangedFloatNode;5;-2272,-281;Inherit;False;Property;_speed;speed;0;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleTimeNode;4;-2085,-279;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.TextureCoordinatesNode;3;-1776,-419;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.NoiseGeneratorNode;1;-1465,-426;Inherit;True;Simplex2D;True;False;2;0;FLOAT2;0,0;False;1;FLOAT;2.87;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;9;-1105,188;Inherit;False;Property;_width;width;2;0;Create;True;0;0;0;False;0;False;0.08;0.12;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;7;-1046,75;Inherit;False;Property;_Freq;Freq;1;0;Create;True;0;0;0;False;0;False;5;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.ColorNode;10;-671,-135;Inherit;False;Property;_Color0;Color 0;3;1;[HDR];Create;True;0;0;0;False;0;False;1,1,1,1;1,1,1,1;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.FunctionNode;8;-634,58;Inherit;True;isoline;-1;;3;81a21ebf3206f8c4f93824a889ce9311;0;3;1;FLOAT;0;False;4;FLOAT;10;False;7;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;11;-332,-7;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;1;COLOR;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;0;-43,40;Float;False;True;-1;2;ASEMaterialInspector;100;1;14/IsolineAtlas1;0770190933193b94aaa3065e307002fa;True;Unlit;0;0;Unlit;2;True;True;4;1;False;-1;1;False;-1;0;1;False;-1;0;False;-1;True;0;False;-1;0;False;-1;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;True;True;True;True;True;0;False;-1;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;1;False;-1;True;3;False;-1;True;True;0;False;-1;0;False;-1;True;1;RenderType=Opaque=RenderType;True;2;False;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=ForwardBase;False;False;0;;0;0;Standard;1;Vertex Position,InvertActionOnDeselection;1;0;0;1;True;False;;False;0
+-2498;55;2498;1268;1507.378;505.1341;1;True;True
+Node;AmplifyShaderEditor.RangedFloatNode;5;-1939.247,134.4119;Inherit;False;Property;_speed;speed;0;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleTimeNode;4;-1752.247,136.4118;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TextureCoordinatesNode;3;-1443.246,-3.588136;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.NoiseGeneratorNode;1;-956.4557,126.2542;Inherit;True;Simplex2D;True;False;2;0;FLOAT2;0,0;False;1;FLOAT;2.87;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ColorNode;10;-671,-135;Inherit;False;Property;_Color0;Color 0;4;1;[HDR];Create;True;0;0;0;False;0;False;1,1,1,1;1,1,1,1;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.FunctionNode;14;-633.0657,120.0442;Inherit;True;isoline2;1;;6;41e8d4f690a2fa04b89dfdf9a2c9c9b9;0;1;20;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;11;-332,-7;Inherit;True;2;2;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;1;COLOR;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;0;0,19;Float;False;True;-1;2;ASEMaterialInspector;100;1;14/IsolineAtlas2;0770190933193b94aaa3065e307002fa;True;Unlit;0;0;Unlit;2;True;True;4;1;False;-1;1;False;-1;0;1;False;-1;0;False;-1;True;0;False;-1;0;False;-1;False;False;False;False;False;False;False;False;False;True;0;False;-1;False;True;0;False;-1;False;True;True;True;True;True;0;False;-1;False;False;False;False;False;False;False;True;False;255;False;-1;255;False;-1;255;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;1;False;-1;True;3;False;-1;True;True;0;False;-1;0;False;-1;True;1;RenderType=Opaque=RenderType;True;2;False;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=ForwardBase;False;False;0;;0;0;Standard;1;Vertex Position,InvertActionOnDeselection;1;0;0;1;True;False;;False;0
 WireConnection;4;0;5;0
 WireConnection;3;1;4;0
 WireConnection;1;0;3;0
-WireConnection;8;1;1;0
-WireConnection;8;4;7;0
-WireConnection;8;7;9;0
+WireConnection;14;20;1;0
 WireConnection;11;0;10;0
-WireConnection;11;1;8;0
+WireConnection;11;1;14;0
 WireConnection;0;0;11;0
 ASEEND*/
-//CHKSM=F4C1428DF85D355E1BDEDD0540DAAD0B17BAFDD5
+//CHKSM=49D7F776BFB75C1527B48A13844D1CC8412C1190
